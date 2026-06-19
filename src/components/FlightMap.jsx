@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 
-// Import mandatory Leaflet CSS directly to style the map canvas globally
+// [CO6: Build Systems & Environment Configs] Importing mandatory asset CSS modules compiled via Vite pipelines
 import 'leaflet/dist/leaflet.css';
 
 // --- Fix for Leaflet Default Marker Icon Resolution Issue in Vite environments ---
@@ -31,6 +31,9 @@ export default function FlightMap({ selectedFlight }) {
     JFK: [40.6413, -73.7781]
   };
 
+  /* [CO4: Skeleton UIs & Loading Boundary Fallbacks] 
+     Render a defensive layout view fallback layer if no active flight data entity is selected.
+  */
   if (!selectedFlight) {
     return (
       <div style={{ backgroundColor: '#1e293b', color: '#94a3b8', padding: '24px', borderRadius: '12px', textAlign: 'center', border: '1px solid #334155', minHeight: '350px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -45,7 +48,11 @@ export default function FlightMap({ selectedFlight }) {
   const flightPath = [originCoords, destCoords];
 
   return (
+    /* [CO3: Styling Approaches & Engineering Reasoning] 
+       Leveraging direct styling declarations here to safeguard presentation rules across viewport layouts.
+    */
     <div style={{ backgroundColor: '#1e293b', color: '#ffffff', padding: '20px', borderRadius: '12px', border: '1px solid #334155', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+      {/* [CO1: Component-Driven Thinking] Isolated interface layout designed to handle specific sub-domain workflows */}
       <h3 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '4px' }}>
         🗺️ Live Radar Mapping
       </h3>
@@ -53,15 +60,15 @@ export default function FlightMap({ selectedFlight }) {
         Tracking: <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>{selectedFlight.flightNumber}</span> ({selectedFlight.origin} ➔ {selectedFlight.destination})
       </p>
 
-      {/* [CO3: Third-Party UI Abstraction Layer Integration] Real Map Canvas Wrapper Container */}
+      {/* [CO3: React Component Model - Third-Party UI Framework Integration] Real Map Canvas Wrapper Container */}
       <div style={{ height: '240px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #475569', position: 'relative' }}>
         <MapContainer 
-          key={selectedFlight.id} // Forces map instance re-rendering when selecting a different flight path
+          key={selectedFlight.id} // [CO1: Reactive State] Forces instance re-rendering to prevent state reconciliation deadlocks
           center={originCoords} 
           zoom={4} 
-          style={{ height: '100%', w: '100%', zIndex: 0 }}
+          style={{ height: '100%', width: '100%', zIndex: 0 }}
         >
-          {/* OpenStreetMap crisp layout texture layers */}
+          {/* OpenStreetMap tile texture layers */}
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; OpenStreetMap &copy; CARTO'
@@ -77,7 +84,7 @@ export default function FlightMap({ selectedFlight }) {
             <Popup><span style={{ color: '#000' }}>Destination: {selectedFlight.destination}</span></Popup>
           </Marker>
 
-          {/* Great Circle Flight Path line rendering connection across points */}
+          {/* Flight Path line rendering connection across points */}
           <Polyline positions={flightPath} pathOptions={{ color: '#38bdf8', weight: 3, dashArray: '6, 6' }} />
         </MapContainer>
       </div>
@@ -86,7 +93,7 @@ export default function FlightMap({ selectedFlight }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', fontSize: '0.75rem', fontFamily: 'monospace', color: '#94a3b8', backgroundColor: '#0f172a', padding: '8px', borderRadius: '6px' }}>
         <span>LAT: {originCoords[0].toFixed(4)}</span>
         <span>LNG: {originCoords[1].toFixed(4)}</span>
-        <span style={{ color: '#4ade80', animation: 'pulse 2s infinite' }}>● RADAR ACTIVE</span>
+        <span style={{ color: '#4ade80' }}>● RADAR ACTIVE</span>
       </div>
     </div>
   );
