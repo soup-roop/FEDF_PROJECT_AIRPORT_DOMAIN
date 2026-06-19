@@ -34,6 +34,22 @@ app.put('/api/flights/:id', (req, res) => {
   res.json({ message: "Flight updated on ATC server successfully", flight: updatedFlight });
 });
 
+// --- [Live Airport Operations Telemetry Simulator] ---
+// Mimics actual ATC updates by updating statuses and gates in memory every 6 seconds
+setInterval(() => {
+  const statuses = ["On Time", "Delayed", "Cancelled"];
+  
+  // Randomly select one flight to update on this heartbeat tick
+  const randomFlightIndex = Math.floor(Math.random() * flights.length);
+  const newStatus = statuses[Math.floor(Math.random() * statuses.length)];
+  const newGate = `B${Math.floor(Math.random() * 20) + 1}`;
+
+  flights[randomFlightIndex].status = newStatus;
+  flights[randomFlightIndex].gate = newGate;
+
+  console.log(`📡 [ATC Live Broadcast Update] Flight ${flights[randomFlightIndex].flightNumber} set to ${newStatus} at Gate ${newGate}`);
+}, 6000);
+
 app.listen(PORT, () => {
   console.log(`✈️ SkyTrack REST API Server running smoothly on http://localhost:${PORT}`);
 });
